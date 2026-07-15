@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logshield-worker
+  labels: { app: logshield, component: inference-worker }
+spec:
+  replicas: 6
+  selector:
+    matchLabels: { app: logshield, component: inference-worker }
+  template:
+    metadata:
+      labels: { app: logshield, component: inference-worker }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/avase33/logshield-ai:latest
+          args: ["logshield", "serve", "--host", "0.0.0.0", "--port", "8000"]
+          ports: [{ containerPort: 8000 }]
+          env:
+            - { name: LOGSHIELD_BUS, value: kafka }
+            - { name: KAFKA_BROKERS, value: kafka:9092 }
+            - { name: LOGSHIELD_STORAGE, value: clickhouse }
+            - { name: CLICKHOUSE_URL, value: http://clickhouse:8123 }
+            - { name: LOGSHIELD_VECTOR, value: qdrant }
+            - { name: QDRANT_URL, value: http://qdrant:6333 }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8000 }
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            requests: { cpu: "500m", memory: "512Mi" }
+            limits: { cpu: "2", memory: "2Gi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logshield-worker
+spec:
+  selector: { app: logshield, component: inference-worker }
+  ports:
+    - port: 80
+      targetPort: 8000
+  type: ClusterIP

@@ -1,0 +1,46 @@
+# Horizontal Pod Autoscaler driven by Kafka consumer lag (via a custom/external
+# metric exported by Prometheus Adapter or KEDA). Workers scale out when the
+# inference consumer group falls behind the log firehose, and back in when caught
+# up — this is the core elasticity of the design.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: logshield-worker
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: logshield-worker
+  minReplicas: 6
+  maxReplicas: 100
+  metrics:
+    - type: External
+      external:
+        metric:
+          name: kafka_consumergroup_lag
+          selector:
+            matchLabels:
+              consumergroup: logshield-inference
+              topic: logs.raw
+        target:
+          type: AverageValue
+          averageValue: "10000"       # target ~10k lag per pod
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 15
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 20
+          periodSeconds: 60

@@ -1,0 +1,23 @@
+# Kafka topic + partition configuration for the LogShield ingestion bus.
+# Partition count sets the max parallelism of the inference worker pool.
+
+topics:
+  - name: logs.raw
+    partitions: 24            # one consumer per partition; sized for 50k+ logs/sec
+    replication_factor: 3
+    configs:
+      retention.ms: "3600000"        # 1h raw retention; ClickHouse is the long-term store
+      compression.type: lz4
+      max.message.bytes: "1048576"
+      cleanup.policy: delete
+
+  - name: logs.anomalies
+    partitions: 6
+    replication_factor: 3
+    configs:
+      retention.ms: "86400000"       # 24h — anomalies also mirrored to the vector DB
+
+consumer_groups:
+  - id: logshield-inference
+    topic: logs.raw
+    # Horizontal Pod Autoscaler scales workers on this group's total lag.

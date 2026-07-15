@@ -1,0 +1,47 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "schemaVersion": 39,
+  "title": "LogShield-AI Telemetry",
+  "tags": ["logshield"],
+  "timezone": "browser",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Logs/sec",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(logshield_logs_per_second)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Error rate",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "targets": [{ "expr": "avg(logshield_error_rate)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "New incident types",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "sum(logshield_new_incident_types)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Kafka consumer lag",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "targets": [{ "expr": "sum(logshield_kafka_consumer_lag)", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Anomalies (rate)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [{ "expr": "rate(logshield_anomalies_total[5m])", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Logs by severity",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [{ "expr": "sum by (severity) (logshield_logs_by_severity)", "refId": "A" }]
+    }
+  ]
+}

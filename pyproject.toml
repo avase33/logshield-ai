@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "logshield-ai"
+version = "0.1.0"
+description = "Distributed, real-time AI telemetry analysis engine — log parsing, open-set anomaly clustering, and health monitoring at 50k+ logs/sec"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Akhil Vase" }]
+keywords = ["logs", "telemetry", "observability", "anomaly-detection", "drain", "log-parsing", "kafka", "streaming"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: System :: Logging",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Intended Audience :: Developers",
+]
+dependencies = []
+
+[project.optional-dependencies]
+serve = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "pydantic>=2.6"]
+onnx = ["onnxruntime>=1.17", "numpy>=1.24"]
+kafka = ["kafka-python>=2.0"]
+clickhouse = ["clickhouse-connect>=0.7"]
+vector = ["qdrant-client>=1.8"]
+bench = ["psutil>=5.9"]
+load = ["locust>=2.24"]
+dev = ["pytest>=8.0", "pytest-cov>=4.1", "ruff>=0.4", "mypy>=1.9"]
+
+[project.urls]
+Homepage = "https://github.com/avase33/logshield-ai"
+Repository = "https://github.com/avase33/logshield-ai"
+Issues = "https://github.com/avase33/logshield-ai/issues"
+
+[project.scripts]
+logshield = "logshield.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["logshield*"]
+
+[tool.setuptools.package-data]
+logshield = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "B008"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true

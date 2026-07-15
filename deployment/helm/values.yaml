@@ -1,0 +1,29 @@
+image:
+  repository: ghcr.io/avase33/logshield-ai
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 6
+
+autoscaling:
+  enabled: true
+  minReplicas: 6
+  maxReplicas: 100
+  targetKafkaLagPerPod: 10000
+  targetCPUUtilizationPercentage: 70
+
+env:
+  LOGSHIELD_BUS: kafka
+  KAFKA_BROKERS: kafka:9092
+  LOGSHIELD_STORAGE: clickhouse
+  CLICKHOUSE_URL: http://clickhouse:8123
+  LOGSHIELD_VECTOR: qdrant
+  QDRANT_URL: http://qdrant:6333
+
+resources:
+  requests: { cpu: 500m, memory: 512Mi }
+  limits: { cpu: "2", memory: 2Gi }
+
+service:
+  type: ClusterIP
+  port: 80

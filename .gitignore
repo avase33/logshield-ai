@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Databases / generated data
+*.db
+*.sqlite3
+*.log
+
+# Rust
+src/ingestion/target/
+src/ingestion/Cargo.lock
+
+# Env / secrets
+.env
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Local verification helpers
+verify_logshield.py
+verify_tiny.py
+run_logshield_verify.bat
+run_tiny.bat
+run_console.txt
+run_tiny_console.txt
+logshield_verify_output.txt
+logshield_tiny_output.txt
